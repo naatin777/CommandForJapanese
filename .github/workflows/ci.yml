@@ -32,4 +32,5 @@ jobs:
           xcodebuild test \
             -project CommandForJapanese.xcodeproj \
             -scheme CommandForJapanese \
-            -destination 'platform=macOS'
+            -destination 'platform=macOS,arch=arm64' \
+            CODE_SIGNING_ALLOWED=NO
