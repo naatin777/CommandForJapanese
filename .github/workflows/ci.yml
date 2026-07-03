@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  lint-and-test:
+    runs-on: macos-26
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install tools
+        run: |
+          brew install swiftformat
+          brew install swiftlint
+
+      - name: Format check
+        run: |
+          swiftformat --lint CommandForJapanese CommandForJapaneseTests
+
+      - name: SwiftLint
+        run: |
+          swiftlint lint --strict
+
+      - name: Test
+        run: |
+          xcodebuild test \
+            -project CommandForJapanese.xcodeproj \
+            -scheme CommandForJapanese \
+            -destination 'platform=macOS'
