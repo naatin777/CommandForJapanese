@@ -1,0 +1,13 @@
+--swiftversion 6.0
+
+--indent 4
+--maxwidth 120
+
+--enable redundantSelf
+--enable redundantNilInit
+--enable redundantReturn
+--enable redundantVoidReturnType
+--enable unusedArguments
+
+--disable trailingCommas
+--disable wrapMultilineStatementBraces
