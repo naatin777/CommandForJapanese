@@ -16,8 +16,8 @@ jobs:
 
       - name: Install tools
         run: |
-          brew install swiftformat
-          brew install swiftlint
+          brew untap aws/tap || true
+          brew install swiftformat swiftlint
 
       - name: Format check
         run: |
