@@ -2,6 +2,7 @@ import AppKit
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusBarController: StatusBarController?
+    private var settingsWindowController: SettingsWindowController?
 
     func applicationDidFinishLaunching(_: Notification) {
         configureApplication()
@@ -24,6 +25,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     private func openSettings() {
-        print("Open settings from AppDelegate")
+        if settingsWindowController == nil {
+            settingsWindowController = SettingsWindowController()
+        }
+
+        settingsWindowController?.showWindow(nil)
+        settingsWindowController?.window?.makeKeyAndOrderFront(nil)
+
+        NSApp.activate(ignoringOtherApps: true)
     }
 }
