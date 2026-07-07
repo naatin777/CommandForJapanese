@@ -13,6 +13,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func setupStatusBar() {
-        statusBarController = StatusBarController()
+        statusBarController = StatusBarController(
+            onOpenSettings: { [weak self] in
+                self?.openSettings()
+            },
+            onQuit: {
+                NSApp.terminate(nil)
+            }
+        )
+    }
+    
+    private func openSettings() {
+        print("Open settings from AppDelegate")
     }
 }

@@ -3,12 +3,20 @@ import AppKit
 final class StatusBarController: NSObject {
     private let statusItem: NSStatusItem
     private let menuFactory: StatusBarMenuFactory
+    
+    private let onOpenSettings: () -> Void
+    private let onQuit: () -> Void
 
-    override init() {
+    init(
+        onOpenSettings: @escaping () -> Void,
+        onQuit: @escaping () -> Void
+    ) {
         statusItem = NSStatusBar.system.statusItem(
             withLength: NSStatusItem.variableLength
         )
         menuFactory = StatusBarMenuFactory()
+        self.onOpenSettings = onOpenSettings
+        self.onQuit = onQuit
 
         super.init()
 
@@ -31,10 +39,10 @@ final class StatusBarController: NSObject {
     }
 
     @objc func openSettings() {
-        print("Open settings")
+        onOpenSettings()
     }
 
     @objc func quit() {
-        NSApp.terminate(nil)
+        onQuit()
     }
 }
