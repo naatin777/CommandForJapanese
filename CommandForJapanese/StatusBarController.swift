@@ -3,7 +3,7 @@ import AppKit
 final class StatusBarController: NSObject {
     private let statusItem: NSStatusItem
     private let menuFactory: StatusBarMenuFactory
-    
+
     private let onOpenSettings: () -> Void
     private let onQuit: () -> Void
 

@@ -7,6 +7,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_: Notification) {
         configureApplication()
         setupStatusBar()
+        openSettings()
+    }
+
+    func applicationShouldHandleReopen(_: NSApplication, hasVisibleWindows _: Bool) -> Bool {
+        openSettings()
+        return true
     }
 
     private func configureApplication() {
@@ -23,7 +29,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         )
     }
-    
+
     private func openSettings() {
         if settingsWindowController == nil {
             settingsWindowController = SettingsWindowController()
