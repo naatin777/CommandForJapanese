@@ -1,8 +1,12 @@
 import AppKit
 
 final class SettingsViewController: NSViewController {
+    private let settingsStore: AppSettingsStore
+    private var settings: AppSettings
+    
     private let titleLabel = NSTextField(labelWithString: "Command for Japanese")
     private let descriptionLabel = NSTextField(labelWithString: "Configure command key behavior.")
+    
     private let launchAtLoginCheckbox = NSButton(checkboxWithTitle: "Launch at login", target: nil, action: nil)
 
     private let leftCommandPopup = NSPopUpButton()
@@ -29,6 +33,18 @@ final class SettingsViewController: NSViewController {
         .switchToJapanese,
         .doNothing
     ]
+    
+    init(settingsStore: AppSettingsStore = AppSettingsStore()) {
+        self.settingsStore = settingsStore
+        self.settings = settingsStore.load()
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) is not supported")
+    }
 
     override func loadView() {
         view = NSView()
@@ -38,6 +54,7 @@ final class SettingsViewController: NSViewController {
         super.viewDidLoad()
 
         setupViews()
+        applySettingsToViews()
         setupActions()
         setupLayout()
     }
@@ -52,7 +69,42 @@ final class SettingsViewController: NSViewController {
         rightCommandPopup.addItems(withTitles: rightCommandActions.map(\.title))
         bothCommandPopup.addItems(withTitles: bothCommandActions.map(\.title))
     }
+    
+    private func applySettingsToViews() {
+        selectAction(
+            settings.leftCommandAction,
+            in: leftCommandPopup,
+            from: leftCommandActions
+        )
+        
+        selectAction(
+            settings.rightCommandAction,
+            in: rightCommandPopup,
+            from: rightCommandActions
+        )
+        
+        selectAction(
+            settings.bothCommandAction,
+            in: bothCommandPopup,
+            from: bothCommandActions
+        )
+        
+        launchAtLoginCheckbox.state = settings.launchAtLogin ? .on : .off
+    }
 
+    private func selectAction(
+        _ action: CommandKeyAction,
+        in popup: NSPopUpButton,
+        from actions: [CommandKeyAction]
+    ) {
+        guard let index = actions.firstIndex(of: action) else {
+            popup.selectItem(at: 0)
+            return
+        }
+
+        popup.selectItem(at: index)
+    }
+    
     private func setupActions() {
         launchAtLoginCheckbox.target = self
         launchAtLoginCheckbox.action = #selector(launchAtLoginChanged)
@@ -149,22 +201,38 @@ final class SettingsViewController: NSViewController {
     }
 
     @objc private func launchAtLoginChanged() {
-        let isEnabled = launchAtLoginCheckbox.state == .on
-        print("Launch at login:", isEnabled)
+        settings.launchAtLogin = launchAtLoginCheckbox.state == .on
+        saveSettings()
     }
 
     @objc private func leftCommandPopupChanged() {
-        let action = selectedLeftCommandAction()
-        print("Left Command:", action)
+        settings.leftCommandAction = selectedLeftCommandAction()
+        saveSettings()
     }
 
     @objc private func rightCommandPopupChanged() {
-        let action = selectedRightCommandAction()
-        print("Right Command:", action)
+        settings.rightCommandAction = selectedRightCommandAction()
+        saveSettings()
     }
 
     @objc private func bothCommandPopupChanged() {
-        let action = selectedBothCommandAction()
-        print("Both Commands:", action)
+        settings.bothCommandAction = selectedBothCommandAction()
+        saveSettings()
+    }
+    
+    private func saveSettings() {
+        do {
+            try settingsStore.save(settings)
+        } catch {
+            showSaveError(error)
+        }
+    }
+    
+    private func showSaveError(_ error: Error) {
+        let alert = NSAlert()
+        alert.messageText = "Failed to save settings"
+        alert.informativeText = error.localizedDescription
+        alert.alertStyle = .warning
+        alert.runModal()
     }
 }
