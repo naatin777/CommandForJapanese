@@ -1,5 +1,6 @@
 import AppKit
 
+@MainActor
 final class SettingsWindowController: NSWindowController {
     init() {
         let viewController = SettingsViewController(

@@ -15,7 +15,7 @@ final class SettingsController {
         self.loginItemService = loginItemService
         self.settings = settingsStore.load()
             
-        
+        syncLaunchAtLoginFromSystem()
     }
     
     var isLaunchAtLoginEnabled: Bool {
