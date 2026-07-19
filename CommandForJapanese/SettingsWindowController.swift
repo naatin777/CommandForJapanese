@@ -2,7 +2,12 @@ import AppKit
 
 final class SettingsWindowController: NSWindowController {
     init() {
-        let viewController = SettingsViewController()
+        let viewController = SettingsViewController(
+            settingsController: SettingsController(
+                settingsStore: AppSettingsStore(),
+                loginItemService: LoginItemService()
+            )
+        )
 
         let window = NSWindow(
             contentRect: NSRect(

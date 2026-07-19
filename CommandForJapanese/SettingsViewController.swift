@@ -1,8 +1,8 @@
 import AppKit
 
+@MainActor
 final class SettingsViewController: NSViewController {
-    private let settingsStore: AppSettingsStore
-    private var settings: AppSettings
+    private let settingsController: SettingsController
     
     private let titleLabel = NSTextField(labelWithString: "Command for Japanese")
     private let descriptionLabel = NSTextField(labelWithString: "Configure command key behavior.")
@@ -34,9 +34,8 @@ final class SettingsViewController: NSViewController {
         .doNothing
     ]
     
-    init(settingsStore: AppSettingsStore = AppSettingsStore()) {
-        self.settingsStore = settingsStore
-        self.settings = settingsStore.load()
+    init(settingsController: SettingsController) {
+        self.settingsController = settingsController
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -59,7 +58,7 @@ final class SettingsViewController: NSViewController {
         setupLayout()
     }
 
-    func setupViews() {
+    private func setupViews() {
         titleLabel.font = .systemFont(ofSize: 22, weight: .semibold)
 
         descriptionLabel.font = .systemFont(ofSize: 13)
@@ -71,6 +70,8 @@ final class SettingsViewController: NSViewController {
     }
     
     private func applySettingsToViews() {
+        let settings = settingsController.settings
+        
         selectAction(
             settings.leftCommandAction,
             in: leftCommandPopup,
@@ -89,7 +90,7 @@ final class SettingsViewController: NSViewController {
             from: bothCommandActions
         )
         
-        launchAtLoginCheckbox.state = settings.launchAtLogin ? .on : .off
+        launchAtLoginCheckbox.state = settingsController.isLaunchAtLoginEnabled ? .on : .off
     }
 
     private func selectAction(
@@ -201,30 +202,49 @@ final class SettingsViewController: NSViewController {
     }
 
     @objc private func launchAtLoginChanged() {
-        settings.launchAtLogin = launchAtLoginCheckbox.state == .on
-        saveSettings()
+        let shouldEnable = launchAtLoginCheckbox.state == .on
+        
+        do {
+            try settingsController.updateLaunchAtLogin(shouldEnable)
+            launchAtLoginCheckbox.state = settingsController.isLaunchAtLoginEnabled ? .on : .off
+        } catch {
+            launchAtLoginCheckbox.state = settingsController.isLaunchAtLoginEnabled ? .on : .off
+            showLoginItemError(error)
+        }
+    }
+    
+    private func showLoginItemError(_ error: Error) {
+        let alert = NSAlert()
+        alert.messageText = "Failed to update launch at login"
+        alert.informativeText = error.localizedDescription
+        alert.alertStyle = .warning
+        alert.runModal()
     }
 
     @objc private func leftCommandPopupChanged() {
-        settings.leftCommandAction = selectedLeftCommandAction()
-        saveSettings()
+        do {
+            try settingsController.updateLeftCommandAction(selectedLeftCommandAction())
+        } catch {
+            showSaveError(error)
+            applySettingsToViews()
+        }
     }
 
     @objc private func rightCommandPopupChanged() {
-        settings.rightCommandAction = selectedRightCommandAction()
-        saveSettings()
+        do {
+            try settingsController.updateRightCommandAction(selectedRightCommandAction())
+        } catch {
+            showSaveError(error)
+            applySettingsToViews()
+        }
     }
 
     @objc private func bothCommandPopupChanged() {
-        settings.bothCommandAction = selectedBothCommandAction()
-        saveSettings()
-    }
-    
-    private func saveSettings() {
         do {
-            try settingsStore.save(settings)
+            try settingsController.updateBothCommandAction(selectedBothCommandAction())
         } catch {
             showSaveError(error)
+            applySettingsToViews()
         }
     }
     

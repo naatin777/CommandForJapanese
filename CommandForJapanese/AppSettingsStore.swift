@@ -1,6 +1,6 @@
 import Foundation
 
-final nonisolated class AppSettingsStore {
+final nonisolated class AppSettingsStore: AppSettingsStoring {
     private let userDefaults: UserDefaults
     private let key = "appSettings"
 
