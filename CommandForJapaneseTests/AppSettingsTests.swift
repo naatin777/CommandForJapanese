@@ -24,4 +24,43 @@ final class AppSettingsTests: XCTestCase {
 
         XCTAssertEqual(decoded, original)
     }
+    
+    func test_actionForLeftTrigger_returnsLeftCommandAction() {
+        let settings = AppSettings(
+            leftCommandAction: .showEmoji,
+            rightCommandAction: .switchToJapanese,
+            bothCommandAction: .doNothing,
+            launchAtLogin: false
+        )
+
+        let action = settings.action(for: .left)
+
+        XCTAssertEqual(action, .showEmoji)
+    }
+
+    func test_actionForRightTrigger_returnsRightCommandAction() {
+        let settings = AppSettings(
+            leftCommandAction: .showEmoji,
+            rightCommandAction: .doNothing,
+            bothCommandAction: .switchToEnglish,
+            launchAtLogin: false
+        )
+
+        let action = settings.action(for: .right)
+
+        XCTAssertEqual(action, .doNothing)
+    }
+
+    func test_actionForBothTrigger_returnsBothCommandAction() {
+        let settings = AppSettings(
+            leftCommandAction: .showEmoji,
+            rightCommandAction: .switchToJapanese,
+            bothCommandAction: .switchToEnglish,
+            launchAtLogin: false
+        )
+
+        let action = settings.action(for: .both)
+
+        XCTAssertEqual(action, .switchToEnglish)
+    }
 }

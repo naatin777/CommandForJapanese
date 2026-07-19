@@ -10,4 +10,15 @@ nonisolated struct AppSettings: Equatable, Codable {
         bothCommandAction: .showEmoji,
         launchAtLogin: false
     )
+    
+    func action(for trigger: CommandKeyTrigger) -> CommandKeyAction {
+        switch trigger {
+        case .left:
+            leftCommandAction
+        case .right:
+            rightCommandAction
+        case .both:
+            bothCommandAction
+        }
+    }
 }
