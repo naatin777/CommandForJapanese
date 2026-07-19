@@ -24,7 +24,7 @@ final class AppSettingsTests: XCTestCase {
 
         XCTAssertEqual(decoded, original)
     }
-    
+
     func test_actionForLeftTrigger_returnsLeftCommandAction() {
         let settings = AppSettings(
             leftCommandAction: .showEmoji,

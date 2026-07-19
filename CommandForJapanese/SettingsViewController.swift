@@ -3,10 +3,10 @@ import AppKit
 @MainActor
 final class SettingsViewController: NSViewController {
     private let settingsController: SettingsController
-    
+
     private let titleLabel = NSTextField(labelWithString: "Command for Japanese")
     private let descriptionLabel = NSTextField(labelWithString: "Configure command key behavior.")
-    
+
     private let launchAtLoginCheckbox = NSButton(checkboxWithTitle: "Launch at login", target: nil, action: nil)
 
     private let leftCommandPopup = NSPopUpButton()
@@ -33,15 +33,15 @@ final class SettingsViewController: NSViewController {
         .switchToJapanese,
         .doNothing
     ]
-    
+
     init(settingsController: SettingsController) {
         self.settingsController = settingsController
-        
+
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     @available(*, unavailable)
-    required init?(coder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) is not supported")
     }
 
@@ -68,28 +68,28 @@ final class SettingsViewController: NSViewController {
         rightCommandPopup.addItems(withTitles: rightCommandActions.map(\.title))
         bothCommandPopup.addItems(withTitles: bothCommandActions.map(\.title))
     }
-    
+
     private func applySettingsToViews() {
         let settings = settingsController.settings
-        
+
         selectAction(
             settings.leftCommandAction,
             in: leftCommandPopup,
             from: leftCommandActions
         )
-        
+
         selectAction(
             settings.rightCommandAction,
             in: rightCommandPopup,
             from: rightCommandActions
         )
-        
+
         selectAction(
             settings.bothCommandAction,
             in: bothCommandPopup,
             from: bothCommandActions
         )
-        
+
         launchAtLoginCheckbox.state = settingsController.isLaunchAtLoginEnabled ? .on : .off
     }
 
@@ -105,7 +105,7 @@ final class SettingsViewController: NSViewController {
 
         popup.selectItem(at: index)
     }
-    
+
     private func setupActions() {
         launchAtLoginCheckbox.target = self
         launchAtLoginCheckbox.action = #selector(launchAtLoginChanged)
@@ -203,7 +203,7 @@ final class SettingsViewController: NSViewController {
 
     @objc private func launchAtLoginChanged() {
         let shouldEnable = launchAtLoginCheckbox.state == .on
-        
+
         do {
             try settingsController.updateLaunchAtLogin(shouldEnable)
             launchAtLoginCheckbox.state = settingsController.isLaunchAtLoginEnabled ? .on : .off
@@ -212,7 +212,7 @@ final class SettingsViewController: NSViewController {
             showLoginItemError(error)
         }
     }
-    
+
     private func showLoginItemError(_ error: Error) {
         let alert = NSAlert()
         alert.messageText = "Failed to update launch at login"
@@ -247,7 +247,7 @@ final class SettingsViewController: NSViewController {
             applySettingsToViews()
         }
     }
-    
+
     private func showSaveError(_ error: Error) {
         let alert = NSAlert()
         alert.messageText = "Failed to save settings"

@@ -22,7 +22,7 @@ nonisolated struct CommandKeyStateMachine {
 
         return nil
     }
-    
+
     private mutating func handleKeyDown(_ side: CommandKeySide) {
         switch side {
         case .left:
@@ -64,14 +64,12 @@ nonisolated struct CommandKeyStateMachine {
             return .both
         }
 
-        let trigger: CommandKeyTrigger?
-
-        switch side {
+        let trigger: CommandKeyTrigger? = switch side {
         case .left:
-            trigger = leftWasPressed ? .left : nil
+            leftWasPressed ? .left : nil
 
         case .right:
-            trigger = rightWasPressed ? .right : nil
+            rightWasPressed ? .right : nil
         }
 
         resetIfNeeded()
@@ -94,5 +92,4 @@ nonisolated struct CommandKeyStateMachine {
         otherKeyWasPressed = false
         bothTriggered = false
     }
-
 }

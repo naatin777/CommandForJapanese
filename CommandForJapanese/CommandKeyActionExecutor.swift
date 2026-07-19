@@ -4,7 +4,7 @@ import Foundation
 final class CommandKeyActionExecutor {
     private let inputSourceService: any InputSourceServicing
     private let emojiPresenter: any EmojiPresenting
-    
+
     init(
         inputSourceService: any InputSourceServicing,
         emojiPresenter: any EmojiPresenting
@@ -12,7 +12,7 @@ final class CommandKeyActionExecutor {
         self.inputSourceService = inputSourceService
         self.emojiPresenter = emojiPresenter
     }
-    
+
     func execute(_ action: CommandKeyAction) throws {
         switch action {
         case .switchToEnglish:
