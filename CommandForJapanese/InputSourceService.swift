@@ -1,86 +1,52 @@
-import Carbon
+import CoreGraphics
 import Foundation
 
 @MainActor
 final class InputSourceService: InputSourceServicing {
+    private enum KeyCode {
+        static let eisu: CGKeyCode = 102
+        static let kana: CGKeyCode = 104
+    }
+    
     func switchToEnglish() throws {
-        guard let inputSource = findInputSource(
-            matchingAnyID: [
-                "com.apple.keylayout.ABC",
-                "com.apple.keylayout.US"
-            ]
-        ) else {
-            throw InputSourceServiceError.inputSourceNotFound(
-                language: "English"
-            )
-        }
-
-        try select(
-            inputSource,
-            language: "English"
-        )
+        try postKey(keyCode: KeyCode.eisu)
     }
-
+    
     func switchToJapanese() throws {
-        guard let inputSource = findInputSource(
-            matchingAnyID: [
-                "com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese",
-                "com.apple.inputmethod.Kotoeri.Japanese"
-            ]
-        ) else {
-            throw InputSourceServiceError.inputSourceNotFound(
-                language: "Japanese"
-            )
-        }
-
-        try select(
-            inputSource,
-            language: "Japanese"
-        )
+        try postKey(keyCode: KeyCode.kana)
     }
-
-    private func findInputSource(
-        matchingAnyID identifiers: [String]
-    ) -> TISInputSource? {
-        let properties: [CFString: Any] = [
-            kTISPropertyInputSourceIsEnabled: true,
-            kTISPropertyInputSourceIsSelectCapable: true
-        ]
-
-        guard let sources = TISCreateInputSourceList(
-            properties as CFDictionary,
-            false
-        )?.takeRetainedValue() as? [TISInputSource] else {
-            return nil
-        }
-
-        for identifier in identifiers {
-            if let source = sources.first(where: {
-                inputSourceID(of: $0) == identifier
-            }) {
-                return source
-            }
-        }
-
-        return nil
-    }
-
-    private func inputSourceID(
-        of inputSource: TISInputSource
-    ) -> String? {
-        guard let pointer = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceID) else { return nil }
-
-        return Unmanaged<CFString>.fromOpaque(pointer).takeUnretainedValue() as String
-    }
-
-    private func select(
-        _ inputSource: TISInputSource,
-        language: String
+    
+    private func postKey(
+        keyCode: CGKeyCode
     ) throws {
-        let status = TISSelectInputSource(inputSource)
-
-        guard status == noErr else {
-            throw InputSourceServiceError.selectionFailed(language: language, status: status)
+        guard
+            let keyDown = CGEvent(
+                keyboardEventSource: nil,
+                virtualKey: keyCode,
+                keyDown: true
+            ),
+            let keyUp = CGEvent(
+                keyboardEventSource: nil,
+                virtualKey: keyCode,
+                keyDown: false
+            )
+        else {
+            throw InputSourceServiceError.eventCreationFailed
         }
+        
+        markAsSynthetic(keyDown)
+        markAsSynthetic(keyUp)
+        
+        keyDown.post(tap: .cghidEventTap)
+        keyUp.post(tap: .cghidEventTap)
+    }
+    
+    private func markAsSynthetic(
+        _ event: CGEvent
+    ) {
+        event.setIntegerValueField(
+            .eventSourceUserData,
+            value: SyntheticEvent.marker
+        )
     }
 }

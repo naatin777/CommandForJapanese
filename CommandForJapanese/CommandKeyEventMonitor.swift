@@ -84,11 +84,23 @@ final class CommandKeyEventMonitor {
 
         resetCommandState()
     }
+    
+    private func isSynthetic(
+        _ event: CGEvent
+    ) -> Bool {
+        event.getIntegerValueField(
+            .eventSourceUserData
+        ) == SyntheticEvent.marker
+    }
 
     private func process(
         type: CGEventType,
         event: CGEvent
     ) {
+        guard !isSynthetic(event) else {
+            return
+        }
+
         switch type {
         case .flagsChanged:
             processFlagsChanged(event)
@@ -142,7 +154,9 @@ final class CommandKeyEventMonitor {
         guard let eventTap else {
             return
         }
-
+        
+        resetCommandState()
+        
         CGEvent.tapEnable(
             tap: eventTap,
             enable: true
@@ -179,3 +193,4 @@ final class CommandKeyEventMonitor {
         return Unmanaged.passUnretained(event)
     }
 }
+

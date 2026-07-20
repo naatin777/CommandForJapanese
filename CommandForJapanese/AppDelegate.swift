@@ -32,42 +32,56 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func setupCommandKeyHandling() {
-        let permissionService = AccessibilityPermissionService()
+        let inputPermissionService =
+            InputMonitoringPermissionService()
 
-        guard permissionService.isTrusted else {
-            permissionService.requestPermission()
+        let accessibilityPermissionService =
+            AccessibilityPermissionService()
+
+        guard inputPermissionService.isGranted else {
+            inputPermissionService.requestPermission()
+            print("Input Monitoring permission is required.")
+            return
+        }
+
+        guard accessibilityPermissionService.isTrusted else {
+            accessibilityPermissionService.requestPermission()
             print("Accessibility permission is required.")
             return
         }
 
+        setupCommandKeyEventMonitor()
+    }
+
+    private func setupCommandKeyEventMonitor() {
         let actionExecutor = CommandKeyActionExecutor(
             inputSourceService: InputSourceService(),
             emojiPresenter: EmojiPresenter()
         )
 
-        let commandKeyHandler = CommandKeyHandler(
+        let handler = CommandKeyHandler(
             settingsStore: AppSettingsStore(),
             actionExecutor: actionExecutor
         )
 
-        let commandKeyEventMonitor = CommandKeyEventMonitor { event in
+        let monitor = CommandKeyEventMonitor { event in
             do {
-                try commandKeyHandler.handle(event)
+                try handler.handle(event)
             } catch {
                 print("Command key handling failed:", error)
             }
         }
 
-        self.commandKeyHandler = commandKeyHandler
-        self.commandKeyEventMonitor = commandKeyEventMonitor
+        commandKeyHandler = handler
+        commandKeyEventMonitor = monitor
 
         do {
-            try commandKeyEventMonitor.start()
+            try monitor.start()
         } catch {
             print("Command key monitor failed to start:", error)
         }
     }
-
+    
     private func setupStatusBar() {
         statusBarController = StatusBarController(
             onOpenSettings: { [weak self] in
