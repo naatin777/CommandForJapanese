@@ -38,7 +38,7 @@ final class InputSourceService: InputSourceServicing {
             language: "Japanese"
         )
     }
-    
+
     private func findInputSource(
         matchingAnyID identifiers: [String]
     ) -> TISInputSource? {
@@ -64,21 +64,21 @@ final class InputSourceService: InputSourceServicing {
 
         return nil
     }
-    
+
     private func inputSourceID(
         of inputSource: TISInputSource
     ) -> String? {
         guard let pointer = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceID) else { return nil }
-        
+
         return Unmanaged<CFString>.fromOpaque(pointer).takeUnretainedValue() as String
     }
-    
+
     private func select(
         _ inputSource: TISInputSource,
         language: String
     ) throws {
         let status = TISSelectInputSource(inputSource)
-        
+
         guard status == noErr else {
             throw InputSourceServiceError.selectionFailed(language: language, status: status)
         }

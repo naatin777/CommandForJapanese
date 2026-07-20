@@ -136,7 +136,7 @@ final class CommandKeyHandlerTests: XCTestCase {
     }
 }
 
-private nonisolated final class MockAppSettingsStore: AppSettingsStoring {
+private final nonisolated class MockAppSettingsStore: AppSettingsStoring {
     var settings: AppSettings
 
     init(settings: AppSettings) {
@@ -158,8 +158,7 @@ private nonisolated final class MockAppSettingsStore: AppSettingsStoring {
 
 @MainActor
 private final class MockCommandKeyActionExecutor:
-    CommandKeyActionExecuting
-{
+    CommandKeyActionExecuting {
     private(set) var receivedActions: [CommandKeyAction] = []
 
     var errorToThrow: Error?

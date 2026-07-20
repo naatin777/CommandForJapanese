@@ -3,7 +3,7 @@ import Foundation
 nonisolated enum InputSourceServiceError: LocalizedError {
     case inputSourceNotFound(language: String)
     case selectionFailed(language: String, status: OSStatus)
-    
+
     var errorDescription: String? {
         switch self {
         case let .inputSourceNotFound(language):

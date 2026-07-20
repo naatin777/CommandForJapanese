@@ -21,13 +21,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func configureApplication() {
         NSApp.setActivationPolicy(.accessory)
     }
-    
+
     private func setupActionExecutor() {
         let executor = CommandKeyActionExecutor(
             inputSourceService: InputSourceService(),
             emojiPresenter: EmojiPresenter()
         )
-        
+
         actionExecutor = executor
         try? executor.execute(.showEmoji)
     }
