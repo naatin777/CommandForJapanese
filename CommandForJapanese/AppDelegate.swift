@@ -4,9 +4,11 @@ import AppKit
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusBarController: StatusBarController?
     private var settingsWindowController: SettingsWindowController?
+    private var actionExecutor: CommandKeyActionExecutor?
 
     func applicationDidFinishLaunching(_: Notification) {
         configureApplication()
+        setupActionExecutor()
         setupStatusBar()
         openSettings()
     }
@@ -18,6 +20,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func configureApplication() {
         NSApp.setActivationPolicy(.accessory)
+    }
+    
+    private func setupActionExecutor() {
+        let executor = CommandKeyActionExecutor(
+            inputSourceService: TemporaryInputSourceService(),
+            emojiPresenter: EmojiPresenter()
+        )
+        
+        actionExecutor = executor
+        try? executor.execute(.showEmoji)
     }
 
     private func setupStatusBar() {
