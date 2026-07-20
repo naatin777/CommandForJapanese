@@ -38,6 +38,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let accessibilityPermissionService =
             AccessibilityPermissionService()
 
+        print(
+            "Input Monitoring:",
+            inputPermissionService.isGranted
+        )
+
+        print(
+            "Accessibility:",
+            accessibilityPermissionService.isTrusted
+        )
+        
         guard inputPermissionService.isGranted else {
             inputPermissionService.requestPermission()
             print("Input Monitoring permission is required.")
