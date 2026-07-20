@@ -160,12 +160,7 @@ final class CommandKeyEventMonitor {
         CGEventMask(1) << type.rawValue
     }
 
-    private static let eventTapCallback: CGEventTapCallBack = {
-        _,
-        type,
-        event,
-        userInfo in
-
+    private static let eventTapCallback: CGEventTapCallBack = { _, type, event, userInfo in
         guard let userInfo else {
             return Unmanaged.passUnretained(event)
         }
