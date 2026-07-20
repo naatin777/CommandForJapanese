@@ -26,7 +26,7 @@ final class EmojiPresenter: EmojiPresenting {
 
         let flags: CGEventFlags = [
             .maskControl,
-            .maskCommand,
+            .maskCommand
         ]
 
         keyDown.flags = flags

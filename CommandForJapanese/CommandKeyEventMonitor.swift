@@ -84,7 +84,7 @@ final class CommandKeyEventMonitor {
 
         resetCommandState()
     }
-    
+
     private func isSynthetic(
         _ event: CGEvent
     ) -> Bool {
@@ -154,9 +154,9 @@ final class CommandKeyEventMonitor {
         guard let eventTap else {
             return
         }
-        
+
         resetCommandState()
-        
+
         CGEvent.tapEnable(
             tap: eventTap,
             enable: true
@@ -193,4 +193,3 @@ final class CommandKeyEventMonitor {
         return Unmanaged.passUnretained(event)
     }
 }
-

@@ -47,7 +47,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             "Accessibility:",
             accessibilityPermissionService.isTrusted
         )
-        
+
         guard inputPermissionService.isGranted else {
             inputPermissionService.requestPermission()
             print("Input Monitoring permission is required.")
@@ -91,7 +91,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             print("Command key monitor failed to start:", error)
         }
     }
-    
+
     private func setupStatusBar() {
         statusBarController = StatusBarController(
             onOpenSettings: { [weak self] in

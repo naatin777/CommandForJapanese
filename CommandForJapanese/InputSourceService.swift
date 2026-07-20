@@ -7,15 +7,15 @@ final class InputSourceService: InputSourceServicing {
         static let eisu: CGKeyCode = 102
         static let kana: CGKeyCode = 104
     }
-    
+
     func switchToEnglish() throws {
         try postKey(keyCode: KeyCode.eisu)
     }
-    
+
     func switchToJapanese() throws {
         try postKey(keyCode: KeyCode.kana)
     }
-    
+
     private func postKey(
         keyCode: CGKeyCode
     ) throws {
@@ -33,14 +33,14 @@ final class InputSourceService: InputSourceServicing {
         else {
             throw InputSourceServiceError.eventCreationFailed
         }
-        
+
         markAsSynthetic(keyDown)
         markAsSynthetic(keyUp)
-        
+
         keyDown.post(tap: .cghidEventTap)
         keyUp.post(tap: .cghidEventTap)
     }
-    
+
     private func markAsSynthetic(
         _ event: CGEvent
     ) {
