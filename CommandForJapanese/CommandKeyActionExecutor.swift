@@ -1,7 +1,7 @@
 import Foundation
 
 @MainActor
-final class CommandKeyActionExecutor {
+final class CommandKeyActionExecutor: CommandKeyActionExecuting {
     private let inputSourceService: any InputSourceServicing
     private let emojiPresenter: any EmojiPresenting
 

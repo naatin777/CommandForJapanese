@@ -24,7 +24,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     
     private func setupActionExecutor() {
         let executor = CommandKeyActionExecutor(
-            inputSourceService: TemporaryInputSourceService(),
+            inputSourceService: InputSourceService(),
             emojiPresenter: EmojiPresenter()
         )
         
