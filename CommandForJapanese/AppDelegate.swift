@@ -5,10 +5,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusBarController: StatusBarController?
     private var settingsWindowController: SettingsWindowController?
     private var actionExecutor: CommandKeyActionExecutor?
+    private var commandKeyHandler: CommandKeyHandler?
+    private var commandKeyEventMonitor: CommandKeyEventMonitor?
 
     func applicationDidFinishLaunching(_: Notification) {
         configureApplication()
-        setupActionExecutor()
+        setupCommandKeyHandling()
         setupStatusBar()
         openSettings()
     }
@@ -20,16 +22,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func configureApplication() {
         NSApp.setActivationPolicy(.accessory)
-    }
-
-    private func setupActionExecutor() {
-        let executor = CommandKeyActionExecutor(
-            inputSourceService: InputSourceService(),
-            emojiPresenter: EmojiPresenter()
-        )
-
-        actionExecutor = executor
-        try? executor.execute(.showEmoji)
     }
 
     private func setupStatusBar() {
@@ -52,5 +44,35 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         settingsWindowController?.window?.makeKeyAndOrderFront(nil)
 
         NSApp.activate(ignoringOtherApps: true)
+    }
+    
+    private func setupCommandKeyHandling() {
+        let actionExecutor = CommandKeyActionExecutor(
+            inputSourceService: InputSourceService(),
+            emojiPresenter: EmojiPresenter()
+        )
+        
+        let commandKeyHandler = CommandKeyHandler(
+            settingsStore: AppSettingsStore(),
+            actionExecutor: actionExecutor
+        )
+        
+        let commandKeyEventMonitor = CommandKeyEventMonitor { event in
+            do {
+                try commandKeyHandler.handle(event)
+            } catch {
+                print("Failed to handle command key: \(error)")
+            }
+        }
+        
+        self.actionExecutor = actionExecutor
+        self.commandKeyHandler = commandKeyHandler
+        self.commandKeyEventMonitor = commandKeyEventMonitor
+        
+        do {
+            try commandKeyEventMonitor.start()
+        } catch {
+            print("Failed to start command key monitor: \(error)")
+        }
     }
 }
